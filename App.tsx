@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { Button, StyleSheet, Text, View, Platform } from "react-native";
+import { Button, StyleSheet, Text, View, Platform, Alert } from "react-native";
 import * as Notifications from "expo-notifications";
 import { useEffect, useState } from "react";
 
@@ -41,19 +41,22 @@ export default function App() {
 			finalStatus = status;
 		}
 		if (finalStatus !== "granted") {
-			alert("Failed to get push token for push notification!");
+			Alert.alert("Permission required", "Push notifications need the appropriate permissions");
 			return;
 		}
-		// const token = (await Notifications.getExpoPushTokenAsync()).data;
-		// console.log(token);
-		// setToken(token);
+
+		const token = (await Notifications.getExpoPushTokenAsync()).data;
+
+		console.log(token);
+
+		if (token) {
+			setToken(token);
+		}
 
 		if (Platform.OS === "android") {
 			Notifications.setNotificationChannelAsync("default", {
 				name: "default",
-				importance: Notifications.AndroidImportance.MAX,
-				vibrationPattern: [0, 250, 250, 250],
-				lightColor: "#FF231F7C",
+				importance: Notifications.AndroidImportance.DEFAULT,
 			});
 		}
 	}
